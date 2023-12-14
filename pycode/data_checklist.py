@@ -21,7 +21,7 @@ class MainWindow(QWidget):
 
         # window settings
         self.setWindowTitle("Check_box")
-        self.setWindowIcon(QtGui.QIcon(r'overall_decision_icon_149904.png'))
+        self.setWindowIcon(QtGui.QIcon(r'./_internal/overall_decision_icon_149904.png'))
         # self.setGeometry(100, 100, 400, 100)
         self.setMaximumSize(400, 0)
 
@@ -65,8 +65,8 @@ class MainWindow(QWidget):
             self.catalogue = self.filename_edit.text()[self.filename_edit.text().rfind('\\') + 1:]
             self.content = {f for f in listdir(self.filename_edit.text())}
 
-            if exists(f'{self.catalogue}.pickle'):
-                with open(f'{self.catalogue}.pickle', 'rb') as file:
+            if exists(f'./_internal/{self.catalogue}.pickle'):
+                with open(f'./_internal/{self.catalogue}.pickle', 'rb') as file:
                     saved_conf = pickle.load(file)
                 for file in self.content:
                     if file not in self.filenames_buttons_dict:
@@ -111,7 +111,7 @@ class MainWindow(QWidget):
             save_dict = {}
             for file in self.content:
                 save_dict[file] = self.filenames_buttons_dict[file].checkState()
-            with open(f'{self.catalogue}.pickle', "wb") as file:
+            with open(f'./_internal/{self.catalogue}.pickle', "wb") as file:
                 pickle.dump(save_dict, file)
         except:
             dlg = QMessageBox(self)

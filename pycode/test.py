@@ -1,5 +1,3 @@
-import sys
-from PyQt6 import QtWidgets
 from PyQt6 import QtGui
 from PyQt6 import sip
 from PyQt6.QtCore import Qt
@@ -17,6 +15,7 @@ from PyQt6.QtWidgets import (
     QScrollArea
 )
 
+import sys
 from pathlib import Path
 import pickle
 
@@ -27,7 +26,7 @@ class MainWindow(QWidget):
 
         # window settings
         self.setWindowTitle("Check_box")
-        self.setWindowIcon(QtGui.QIcon(r'overall_decision_icon_149904.png'))
+        self.setWindowIcon(QtGui.QIcon(r'./_internal/overall_decision_icon_149904.png'))
 
         self.mainLayout = QVBoxLayout()
         self.setLayout(self.mainLayout)
@@ -72,17 +71,17 @@ class MainWindow(QWidget):
             from os import listdir
             from os.path import exists
             from math import ceil
-            scroll = QScrollArea()
-            scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
-            scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-            scroll.setWidgetResizable(True)
-            widget = QWidget()
+            self.scroll = QScrollArea()
+            self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+            self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+            self.scroll.setWidgetResizable(True)
+            self.widget = QWidget()
             self.checkbox_layout = QVBoxLayout()
             self.catalogue = self.filename_edit.text()[self.filename_edit.text().rfind('\\') + 1:]
             self.content = {f for f in listdir(self.filename_edit.text())}
 
-            if exists(f'{self.catalogue}.pickle'):
-                with open(f'{self.catalogue}.pickle', 'rb') as file:
+            if exists(f'./_internal/{self.catalogue}.pickle'):
+                with open(f'./_internal/{self.catalogue}.pickle', 'rb') as file:
                     saved_conf = pickle.load(file)
                 for file in self.content:
                     if file not in self.filenames_buttons_dict:
@@ -105,26 +104,28 @@ class MainWindow(QWidget):
             remove_btn = QPushButton('Remove')
             remove_btn.clicked.connect(self.delete_checkboxes)
             self.layout.addWidget(remove_btn, 2, 3, 1, 5)
-            widget.setLayout(self.checkbox_layout)
-            scroll.setWidget(widget)
-            self.mainLayout.addWidget(scroll)
+            self.widget.setLayout(self.checkbox_layout)
+            self.scroll.setWidget(self.widget)
+            self.mainLayout.addWidget(self.scroll)
         except:
             pass
 
     def delete_checkboxes(self):
-        if self.checkbox_layout is not None:
-            while self.checkbox_layout.count():
-                item = self.checkbox_layout.takeAt(0)
-                widget = item.widget()
-                if widget is not None:
-                    widget.deleteLater()
-                else:
-                    self.deleteLayout(item.layout())
-            sip.delete(self.checkbox_layout)
+        # if self.checkbox_layout is not None:
+        #     while self.checkbox_layout.count():
+        #         item = self.checkbox_layout.takeAt(0)
+        #         widget = item.widget()
+        #         if widget is not None:
+        #             widget.deleteLater()
+        #         else:
+        #             self.deleteLayout(item.layout())
+        #     sip.delete(self.checkbox_layout)
+        for i in range(self.checkbox_layout.count()): self.checkbox_layout.itemAt(i).widget().close()
         self.mainLayout.itemAt(1).widget().deleteLater()
         self.layout.itemAt(5).widget().deleteLater()
         self.filenames_buttons_dict = {}
-        
+
+        # self.resize(1,1)
 
     def open_dir_dialog(self):
         direct = str(QFileDialog.getExistingDirectory(self, "Select Directory", "Select directory"))
@@ -137,7 +138,7 @@ class MainWindow(QWidget):
             save_dict = {}
             for file in self.content:
                 save_dict[file] = self.filenames_buttons_dict[file].checkState()
-            with open(f'{self.catalogue}.pickle', "wb") as file:
+            with open(f'./_internal/{self.catalogue}.pickle', "wb") as file:
                 pickle.dump(save_dict, file)
         except:
             dlg = QMessageBox(self)
@@ -150,43 +151,3 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = MainWindow()
     sys.exit(app.exec())
-
-# %%
-from PyQt6 import QtGui, QtCore, QtWidgets
-import sys
-
-
-class Main(QtWidgets.QMainWindow):
-    def __init__(self, parent=None):
-        super(Main, self).__init__(parent)
-        # main button
-        # scroll area widget contents - layout
-        self.layout = QtWidgets.QGridLayout()
-        # main layout
-        self.mainLayout = QtWidgets.
-        # add all main to the main vLayout
-        self.mainLayout.addWidget(self.layout)
-        # central widget
-        self.centralWidget = QtWidgets.QWidget()
-        self.centralWidget.setLayout(self.mainLayout)
-        # set central widget
-        self.setCentralWidget(self.centralWidget)
-
-    def addWidget(self):
-        self.scrollLayout.addRow(Test())
-
-
-class Test(QtWidgets.QWidget):
-    def __init__(self, parent=None):
-        super(Test, self).__init__(parent)
-        self.pushButton = QtWidgets.QPushButton('I am in Test widget')
-        layout = QtWidgets.QHBoxLayout()
-        layout.addWidget(self.pushButton)
-        self.setLayout(layout)
-
-
-app = QtWidgets.QApplication(sys.argv)
-myWidget = Main()
-myWidget.show()
-app.exec()
-# %%
